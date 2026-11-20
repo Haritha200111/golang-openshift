@@ -1,0 +1,10 @@
+# Go build outputs
+/task-api
+*.exe
+*.test
+/vendor/
+
+# Local environment files and credentials
+.env
+.env.*
+!.env.example
