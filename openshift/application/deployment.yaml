@@ -19,8 +19,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: task-api
-          # Replace with your registry/repository and immutable tag.
-          image: quay.io/YOUR_ORG/golang-openshift:1.0.0
+          image: docker.io/haritharavichandran/golang-openshift:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
