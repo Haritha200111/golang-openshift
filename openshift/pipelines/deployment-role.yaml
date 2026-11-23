@@ -1,0 +1,28 @@
+# Give the pipeline permission to update the API Deployment
+# Why? The pipeline needs permission to update the image in your existing task-api Deployment. 
+# We should give it only the permissions it needs, rather than granting broad administrator access.
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pipeline-deployer
+rules:
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - get
+      - list
+      - watch
+      - patch
+      - update
+
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - watch

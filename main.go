@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"net/url"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"strconv"
@@ -125,7 +125,6 @@ func openDatabase() (*sql.DB, error) {
 	}
 	return db, nil
 }
-
 
 func (a *API) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {

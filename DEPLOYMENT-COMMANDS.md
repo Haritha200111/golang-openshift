@@ -874,3 +874,21 @@ Before production use, consider:
 - Tested NetworkPolicies and restricted SCC compatibility.
 
 **Expected final result:** A Go REST API runs on OpenShift, connects to PostgreSQL through an internal Service, accepts API requests through an OpenShift Route, and persists task records on a PostgreSQL PersistentVolumeClaim.
+
+
+
+Red Hat's official Developer Sandbox documentation. It explicitly states that:
+You can bring them back by setting the replica count again.
+Pods in the Developer Sandbox are automatically stopped/scaled to zero after 12 hours of use.
+ 
+
+PS C:\Users\HarithaRavichandran> oc scale statefulset postgres --replicas=1
+statefulset.apps/postgres scaled
+PS C:\Users\HarithaRavichandran> oc get pods -w
+NAME                                         READY   STATUS    RESTARTS   AGE
+postgres-0                                   0/1     Running   0          10s
+workspace8b01e2bce60641fb-5c84c98d48-gs684   3/3     Running   0          21m
+postgres-0                                   1/1     Running   0          15s
+PS C:\Users\HarithaRavichandran> oc scale deployment task-api --replicas=2
+deployment.apps/task-api scaled
+PS C:\Users\HarithaRavichandran>

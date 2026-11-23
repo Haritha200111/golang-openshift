@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: task-api-cicd-run-
+spec:
+  pipelineRef:
+    name: task-api-cicd
+
+  taskRunTemplate:
+    serviceAccountName: pipeline
+
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: pipeline-workspace
+
+    - name: docker-config
+      secret:
+        secretName: dockerhub-auth

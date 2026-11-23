@@ -1,0 +1,103 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: task-api-cicd
+spec:
+  workspaces:
+    - name: shared-workspace
+    - name: docker-config
+
+  tasks:
+    # 1. Clone the GitHub repository
+    - name: clone-repo
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines
+      params:
+        - name: URL
+          value: https://github.com/Haritha200111/golang-openshift.git
+        - name: REVISION
+          value: main
+        - name: DELETE_EXISTING
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    # 2. Validate the Go code
+    - name: go-validation
+      runAfter:
+        - clone-repo
+      taskRef:
+        name: go-ci
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    # 3. Build and push the Docker image
+    - name: build-and-push
+      runAfter:
+        - go-validation
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
+      params:
+        - name: IMAGE
+          value: docker.io/haritharavichandran/golang-openshift:$(tasks.clone-repo.results.COMMIT)
+        - name: DOCKERFILE
+          value: ./Dockerfile
+        - name: CONTEXT
+          value: .
+        - name: STORAGE_DRIVER
+          value: vfs
+        - name: TLS_VERIFY
+          value: "true"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: dockerconfig
+          workspace: docker-config
+
+    # 4. Update the existing OpenShift Deployment
+    - name: deploy-to-openshift
+      runAfter:
+        - build-and-push
+      taskRef:
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: openshift-client
+          - name: namespace
+            value: openshift-pipelines
+      params:
+        - name: SCRIPT
+          value: |
+            set -e
+
+            echo "Updating the existing task-api Deployment..."
+
+            oc -n haritharavichandran-dev set image deployment/task-api task-api=docker.io/haritharavichandran/golang-openshift:$(tasks.clone-repo.results.COMMIT)
+
+            echo "Waiting for the Deployment rollout..."
+
+            oc -n haritharavichandran-dev rollout status deployment/task-api --timeout=180s
+
+            echo "Checking the Deployment..."
+
+            oc -n haritharavichandran-dev get deployment task-api
+
+            echo "Deployment completed successfully."
