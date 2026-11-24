@@ -1,0 +1,42 @@
+
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: github-push-template
+spec:
+  params:
+    - name: git-revision
+      description: GitHub commit SHA
+
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: task-api-github-run-
+      spec:
+        pipelineRef:
+          name: task-api-cicd
+
+        params:
+          - name: git-revision
+            value: $(tt.params.git-revision)
+
+        taskRunTemplate:
+          serviceAccountName: pipeline
+
+        workspaces:
+          - name: shared-workspace
+            volumeClaimTemplate:
+              metadata:
+                name: task-api-source
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                storageClassName: gp3
+                resources:
+                  requests:
+                    storage: 2Gi
+
+          - name: docker-config
+            secret:
+              secretName: dockerhub-auth

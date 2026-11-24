@@ -1,14 +1,22 @@
+
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: task-api-cicd
 spec:
+  params:
+    - name: git-url
+      type: string
+      default: https://github.com/Haritha200111/golang-openshift.git
+    - name: git-revision
+      type: string
+      default: main
+
   workspaces:
     - name: shared-workspace
     - name: docker-config
 
   tasks:
-    # 1. Clone the GitHub repository
     - name: clone-repo
       taskRef:
         resolver: cluster
@@ -21,9 +29,9 @@ spec:
             value: openshift-pipelines
       params:
         - name: URL
-          value: https://github.com/Haritha200111/golang-openshift.git
+          value: $(params.git-url)
         - name: REVISION
-          value: main
+          value: $(params.git-revision)
         - name: DELETE_EXISTING
           value: "true"
       workspaces:
@@ -70,7 +78,6 @@ spec:
         - name: dockerconfig
           workspace: docker-config
 
-    # 4. Update the existing OpenShift Deployment
     - name: deploy-to-openshift
       runAfter:
         - build-and-push

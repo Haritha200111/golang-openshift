@@ -29,6 +29,6 @@ spec:
         go test ./...
 
         echo "Building Go application..."
-        go build -trimpath -o /tmp/task-api .
+        go build -buildvcs=false -trimpath -o /tmp/task-api .
 
         echo "Go validation and build completed successfully."
