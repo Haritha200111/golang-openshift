@@ -24,7 +24,7 @@ spec:
       params:
         - name: filter
           value: >-
-            body.repository.full_name == 'Haritha2001/golang-openshift' &&
+            body.repository.full_name == 'Haritha200111/golang-openshift' &&
             body.ref == 'refs/heads/main' &&
             body.deleted == false &&
             body.after.matches('^[0-9a-f]{40}$')
