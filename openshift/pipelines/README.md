@@ -165,7 +165,7 @@ Monitor it:
 oc get pipelineruns -w
 ```
 
-## 12. Useful troubleshooting commands
+## 12. Useful troubleshooting commands.
 
 ```powershell
 oc get pipelines
