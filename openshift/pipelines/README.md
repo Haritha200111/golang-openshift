@@ -187,6 +187,7 @@ oc describe taskrun <taskrun-name>
 oc logs <pod-name> --all-containers=true
 ```
 
+
 ## 13. Remove pipeline resources
 
 Only use these commands if you intentionally want to remove the pipeline setup.
